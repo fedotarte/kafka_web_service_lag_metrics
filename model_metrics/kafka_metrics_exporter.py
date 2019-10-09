@@ -92,7 +92,7 @@ class MetricsExporter:
         self.topic_list = []
         self.consumer_offset_metric = []
         self.bc = BrokerConnection(self.brokers_host, self.brokers_port, socket.AF_INET)
-        self.bc.connect_blocking()
+        # self.bc.connect_blocking()
 
     def get_groups(self):
         cons_groups = []
@@ -159,3 +159,9 @@ class MetricsExporter:
                 # self.topic_data_metric.append(self.topic_nps)
 
         return self.topic_offsets_for_groups
+
+    def close_connection(self):
+        self.bc.close()
+
+    def init_connection(self):
+        self.bc.connect_blocking()

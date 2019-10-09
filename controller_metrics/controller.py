@@ -1,10 +1,10 @@
-import json
+import config
 from flask import Flask, Response, abort
 from model_metrics.kafka_metrics_exporter import MetricsExporter
 
+brokers_host = config.kafka['brokerhost']
+brokers_port = config.kafka['port']
 app = Flask(__name__)
-brokers_host = '104.248.34.60'
-brokers_port = 9092
 
 
 @app.route('/')
@@ -23,6 +23,7 @@ def main_url():
 def return_metrics():
     metrics_response = []
     me = MetricsExporter(brokers_host, brokers_port)
+    me.init_connection()
     consumer_group_list = me.get_groups()
     print('consumer_group_list: ', consumer_group_list)
     for consumer in consumer_group_list:
@@ -35,6 +36,7 @@ def return_metrics():
     # get_metrics = "get metrics here"
     if len(metrics_response) == 0:
         abort(404)
+    me.close_connection()
     response = Response(metrics_response, status=200, content_type='text/plain; charset=utf-8')
     return response
 
