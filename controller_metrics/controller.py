@@ -8,7 +8,7 @@ brokers_port = config.kafka['port']
 
 
 def create_logger(level=logging.INFO):
-    log = logging.getLogger("kafka_id20_adapter")
+    log = logging.getLogger("kafka_exporter")
     log.setLevel(level)
     # handler = logging.StreamHandler(sys.stdout)
     fh = logging.FileHandler("trace.log")
@@ -40,14 +40,14 @@ def return_metrics():
     me = MetricsExporter(brokers_host, brokers_port)
     me.init_connection()
     consumer_group_list = me.get_groups()
-    log.info('consumer_group_list: ', consumer_group_list)
+    log.info('consumer_group_list: %s' % consumer_group_list)
     for consumer in consumer_group_list:
         me.get_topic_offsets(consumer)
-    log.info('kafka_groups_response', me.consumer_groups)
-    log.info('kafka_topics_response', me.topic_offsets_for_groups)
+    log.info('kafka_groups_response %s' % str(me.consumer_groups))
+    log.info('kafka_topics_response %s' % str(me.topic_offsets_for_groups))
     metrics_response = me.topic_offsets_for_groups
-    log.info("topic_list: ", set(me.topic_list))
-    log.info("topic data for metrics: ", me.topic_data_metric)
+    log.info("topic_list: %s" % str(set(me.topic_list)))
+    log.info("topic data for metrics: %s" % str(me.topic_data_metric))
     # get_metrics = "get metrics here"
     if len(metrics_response) == 0:
         abort(404)
