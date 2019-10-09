@@ -100,11 +100,11 @@ class MetricsExporter:
         self.kafka_groups_response = self.bc.send(list_groups_request)
         while not self.kafka_groups_response.is_done:
             for resp, f in self.bc.recv():
-                print('group resp:', resp)
+                # print('group resp:', resp)
                 f.success(resp)
         for group in self.kafka_groups_response.value.groups:
             cons_groups.append(group[0])
-            print('group[0]', group[0])
+            # print('group[0]', group[0])
         return cons_groups
 
     # invoke in each iteration of group list
@@ -115,7 +115,7 @@ class MetricsExporter:
         print('kafka_topics_response', self.kafka_topics_response)
         while not self.kafka_topics_response.is_done:
             for resp, f in self.bc.recv():
-                print('resp: ', resp)
+                # print('resp: ', resp)
                 f.success(resp)
         for topic in self.kafka_topics_response.value.topics:
             self.topic_list.append(topic[0])
@@ -127,36 +127,24 @@ class MetricsExporter:
             # print('end_offset: ', end_offset)
             topic_size = [*end_offset.values()]
             # here to make list
-            print('topic size: ', topic_size[0])
+            # print('topic size: ', topic_size[0])
+            #
+            # print('offsets for {0}'.format(topic[0]))
 
-            print('offsets for {0}'.format(topic[0]))
 
-            # TODO rewrite strings to the metrics, like this:
-            # TODO kafka_topic_consumer_offset{group="",topic=="TestTopic", partition="0",} 11.0
             # TODO kafka_topic_size{topic=="TestTopic", partition="0"} 0.0
 
             for partition in topic[1]:
-                print("topic[1]", topic[1])
+                # print("topic[1]", topic[1])
 
                 lag_diff = topic_size[0] - int(partition[1])
-                print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
+                # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
                 topic_consumer_lag_model = TopicConsumerLagMetricModel(str(consumer_group),
                                                                        str(topic[0]),
                                                                        str(partition[0]),
                                                                        str(topic_size[0]),
                                                                        str(partition[1]))
-                # self.topic_offsets_for_groups.append('for consumer_group: {0} topic_name: {1} partition {2}, size: {3} offset: {4} lag: {5} \n'
-                #                                      .format(str(consumer_group),
-                #                                              str(topic[0]),
-                #                                              str(partition[0]),
-                #                                              str(topic_size[0]),
-                #                                              str((partition[1])),
-                #                                              str(lag_diff)))
                 self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
-                # self.topic_nps['name'] = str(topic[0])
-                # self.topic_nps['partition'] = str(partition[0])
-                # self.topic_nps['size'] = str(topic_size[0])
-                # self.topic_data_metric.append(self.topic_nps)
 
         return self.topic_offsets_for_groups
 
