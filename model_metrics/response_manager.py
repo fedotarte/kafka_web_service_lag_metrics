@@ -1,7 +1,6 @@
 from model_metrics.kafka_metrics_exporter import MetricsExporter
 
 
-
 class ResponseManager:
     def __init__(self):
         self.topic_metric_pattern = {}
