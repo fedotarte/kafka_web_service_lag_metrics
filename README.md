@@ -7,7 +7,7 @@
 
 - then create venv
 
-``code to create venv``
+``python3 -m venv env``
 
 
  - then activate venv
