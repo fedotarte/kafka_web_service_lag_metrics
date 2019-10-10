@@ -1,19 +1,22 @@
 #kafka consumer offset and lag exporter*
 
 - at first clone the project 
-``git clone __url__``
 
-then create venv
+
+``git clone https://github.com/fedotarte/kafka_web_service_lag_metrics.git``
+
+- then create venv
 
 ``code to create venv``
 
 
-then activate venv
+ - then activate venv
 
-``source /venv/bin/activate``
+`source /venv/bin/activate`
 
 so now you see (venv) at the left of terminal window
 type this
+
 `pip install -r requirements`
 
 then run the project
