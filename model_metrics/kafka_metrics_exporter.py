@@ -56,12 +56,12 @@ class TopicConsumerLagMetricModel:
     def get_topic_offset(self):
         return self._topic_offset
 
-    def get_topic_lag(self):
-        self.diff = int(self._topic_size) - int(self._topic_offset)
+    # def get_topic_lag(self):
+    #     self.diff = int(self._topic_size) - int(self._topic_offset)
 
     def __str__(self):
         # 'kafka_server_topic_size {topicname=\"%s\", partition = \"%s\",}: %.1f' % (topic_name, partition, size)
-        return 'kafka_topic_consumer_lag {consumer_group=\"%s\", topic_name = \"%s\", partition = \"%s\", size: \"%s\", offset: \"%s\",}: %.1f \n' \
+        return 'kafka_topic_consumer_lag{consumer_group=\"%s\",topic_name=\"%s\",partition=\"%s\",size=\"%s\",offset=\"%s\",} %.1f \n' \
                % (self._consumer_group,
                   self._topic_name,
                   self._topic_partition,
