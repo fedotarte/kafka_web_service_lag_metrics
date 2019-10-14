@@ -29,7 +29,7 @@ class TopicNamePartitionSizeModel:
         return 'kafka_topic_size {topicname=\"%s\", partition = \"%s\",}: %.1f' % (self._topic_name, self._topic_partition, self._topic_size)
 
 
-class TopicConsumerLagMetricModel:
+class SimpleTopicConsumerLagMetricModel:
     def __init__(self, consumer_group, topic_name, topic_partition, topic_size, topic_offset):
         self._consumer_group = consumer_group
         self._topic_name = topic_name
@@ -59,24 +59,27 @@ class TopicConsumerLagMetricModel:
     # def get_topic_lag(self):
     #     self.diff = int(self._topic_size) - int(self._topic_offset)
 
+    # def __str__(self):
+    #     return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
+    #            'topic_name=\"%s\",' \
+    #            'partition=\"%s\",' \
+    #            'size=\"%s\",' \
+    #            'offset=\"%s\",} %.1f \n' \
+    #            % (self._consumer_group,
+    #               self._topic_name,
+    #               self._topic_partition,
+    #               self._topic_size,
+    #               self._topic_offset,
+    #               self.diff)
+
     def __str__(self):
-        # 'kafka_server_topic_size {topicname=\"%s\", partition = \"%s\",}: %.1f' % (topic_name, partition, size)
-        return 'kafka_topic_consumer_lag{consumer_group=\"%s\",topic_name=\"%s\",partition=\"%s\",size=\"%s\",offset=\"%s\",} %.1f \n' \
+        return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
+               'topic_name=\"%s\",' \
+               'partition=\"%s\",} %.1f \n' \
                % (self._consumer_group,
                   self._topic_name,
                   self._topic_partition,
-                  self._topic_size,
-                  self._topic_offset,
                   self.diff)
-
-    # self.topic_offsets_for_groups.append('for consumer_group: {0} topic_name: {1} partition {2}, size: {3} offset: {4} lag: {5} \n'
-    #                                      .format(str(consumer_group),
-    #                                              str(topic[0]),
-    #                                              str(partition[0]),
-    #                                              str(topic_size[0]),
-    #                                              str((partition[1])),
-    #                                              str(lag_diff)))
-    # self.topic_nps['name'] = str(topic[0])
 
 
 class MetricsExporter:
@@ -131,7 +134,6 @@ class MetricsExporter:
             #
             # print('offsets for {0}'.format(topic[0]))
 
-
             # TODO kafka_topic_size{topic=="TestTopic", partition="0"} 0.0
 
             for partition in topic[1]:
@@ -139,14 +141,21 @@ class MetricsExporter:
 
                 lag_diff = topic_size[0] - int(partition[1])
                 # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
-                topic_consumer_lag_model = TopicConsumerLagMetricModel(str(consumer_group),
-                                                                       str(topic[0]),
-                                                                       str(partition[0]),
-                                                                       str(topic_size[0]),
-                                                                       str(partition[1]))
-                self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
+                simple_topic_consumer_lag_model = SimpleTopicConsumerLagMetricModel(str(consumer_group),
+                                                                             str(topic[0]),
+                                                                             str(partition[0]),
+                                                                             str(topic_size[0]),
+                                                                             str(partition[1]))
+                self.topic_offsets_for_groups.append(simple_topic_consumer_lag_model.__str__())
 
         return self.topic_offsets_for_groups
+
+    def get_topic_inbound_rate(self, consumer_group, topic_name):
+
+        pass
+
+    def get_topic_outbound_rate(self):
+        pass
 
     def close_connection(self):
         self.bc.close()

@@ -1,4 +1,4 @@
-#kafka consumer offset and lag exporter*
+#kafka consumer offset and lag exporter
 
 - at first clone the project 
 
@@ -7,7 +7,8 @@
 
 - then create venv
 
-``python3 -m venv env``
+``python3 -m venv env
+``
 
 
  - then activate venv
