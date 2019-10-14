@@ -59,27 +59,27 @@ class SimpleTopicConsumerLagMetricModel:
     # def get_topic_lag(self):
     #     self.diff = int(self._topic_size) - int(self._topic_offset)
 
-    # def __str__(self):
-    #     return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
-    #            'topic_name=\"%s\",' \
-    #            'partition=\"%s\",' \
-    #            'size=\"%s\",' \
-    #            'offset=\"%s\",} %.1f \n' \
-    #            % (self._consumer_group,
-    #               self._topic_name,
-    #               self._topic_partition,
-    #               self._topic_size,
-    #               self._topic_offset,
-    #               self.diff)
-
     def __str__(self):
         return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
                'topic_name=\"%s\",' \
-               'partition=\"%s\",} %.1f \n' \
+               'partition=\"%s\",' \
+               'size=\"%s\",' \
+               'offset=\"%s\",} %.1f \n' \
                % (self._consumer_group,
                   self._topic_name,
                   self._topic_partition,
+                  self._topic_size,
+                  self._topic_offset,
                   self.diff)
+
+    # def __str__(self):
+    #     return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
+    #            'topic_name=\"%s\",' \
+    #            'partition=\"%s\",} %.1f \n' \
+    #            % (self._consumer_group,
+    #               self._topic_name,
+    #               self._topic_partition,
+    #               self.diff)
 
 
 class MetricsExporter:
@@ -141,12 +141,12 @@ class MetricsExporter:
 
                 lag_diff = topic_size[0] - int(partition[1])
                 # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
-                simple_topic_consumer_lag_model = SimpleTopicConsumerLagMetricModel(str(consumer_group),
+                topic_consumer_lag_model = SimpleTopicConsumerLagMetricModel(str(consumer_group),
                                                                              str(topic[0]),
                                                                              str(partition[0]),
                                                                              str(topic_size[0]),
                                                                              str(partition[1]))
-                self.topic_offsets_for_groups.append(simple_topic_consumer_lag_model.__str__())
+                self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
 
         return self.topic_offsets_for_groups
 
