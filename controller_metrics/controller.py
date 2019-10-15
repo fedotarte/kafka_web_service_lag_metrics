@@ -33,7 +33,6 @@ def main_url():
     return response
 
 
-# TODO add metrics to the response
 @app.route('/metrics', methods=['GET'])
 def return_metrics():
     metrics_response = []

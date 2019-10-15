@@ -72,14 +72,40 @@ class SimpleTopicConsumerLagMetricModel:
                   self._topic_offset,
                   self.diff)
 
-    # def __str__(self):
-    #     return 'kafka_topic_consumer_lag{consumer_group=\"%s\",' \
-    #            'topic_name=\"%s\",' \
-    #            'partition=\"%s\",} %.1f \n' \
-    #            % (self._consumer_group,
-    #               self._topic_name,
-    #               self._topic_partition,
-    #               self.diff)
+
+class SimpleRateLagMetricModel:
+    def __init__(self, consumer_group, topic_name, topic_partition, topic_size, topic_offset):
+        self._consumer_group = consumer_group
+        self._topic_name = topic_name
+        self._topic_partition = topic_partition
+        self._topic_size = topic_size
+        self._topic_offset = topic_offset
+        self.diff = int(self._topic_size) - int(self._topic_offset)
+        # self._topic_lag = topic_lag
+
+    # def set_topic_name(self, topic_name):
+    #     self.__topic_name = topic_name
+    def get_consumer_group(self):
+        return self._consumer_group
+
+    def get_topic_name(self):
+        return self._topic_name
+
+    def get_topic_partition(self):
+        return self._topic_partition
+
+    # def get_topic_lag(self):
+    #     self.diff = int(self._topic_size) - int(self._topic_offset)
+
+    def __str__(self):
+        return 'kafka_topic_consumer_lag_for_rate{' \
+               'consumer_group=\"%s\",' \
+               'topic_name=\"%s\",' \
+               'partition=\"%s\",} %.1f \n' \
+               % (self._consumer_group,
+                  self._topic_name,
+                  self._topic_partition,
+                  self.diff)
 
 
 class MetricsExporter:
@@ -90,6 +116,7 @@ class MetricsExporter:
         self.kafka_topics_response = None
         self.consumer_groups = []
         self.topic_offsets_for_groups = []
+        self.topic_offsets_for_rate = []
         self.topic_nps = {}
         self.topic_data_metric = []
         self.topic_list = []
@@ -138,20 +165,25 @@ class MetricsExporter:
 
             for partition in topic[1]:
                 # print("topic[1]", topic[1])
-
-                lag_diff = topic_size[0] - int(partition[1])
                 # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
                 topic_consumer_lag_model = SimpleTopicConsumerLagMetricModel(str(consumer_group),
                                                                              str(topic[0]),
                                                                              str(partition[0]),
                                                                              str(topic_size[0]),
                                                                              str(partition[1]))
-                self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
+                topic_consumer_rate_model = SimpleRateLagMetricModel(str(consumer_group),
+                                                                     str(topic[0]),
+                                                                     str(partition[0]),
+                                                                     str(topic_size[0]),
+                                                                     str(partition[1]))
 
+                self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
+                self.topic_offsets_for_groups.extend(topic_consumer_rate_model.__str__())
         return self.topic_offsets_for_groups
 
     def get_topic_inbound_rate(self, consumer_group, topic_name):
-
+        topic_consumer_lag_rate_model = SimpleTopicConsumerLagMetricModel
+        self.topic_offsets_for_rate.append(consumer_group, topic_name)
         pass
 
     def get_topic_outbound_rate(self):
