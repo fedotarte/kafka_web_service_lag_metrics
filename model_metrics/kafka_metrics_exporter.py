@@ -73,8 +73,9 @@ class SimpleTopicConsumerLagMetricModel:
                   self.diff)
 
 
-class SimpleRateLagMetricModel:
+class SimpleRateLagMetricModel(SimpleTopicConsumerLagMetricModel):
     def __init__(self, consumer_group, topic_name, topic_partition, topic_size, topic_offset):
+        super().__init__(consumer_group, topic_name, topic_partition, topic_size, topic_offset)
         self._consumer_group = consumer_group
         self._topic_name = topic_name
         self._topic_partition = topic_partition
@@ -85,17 +86,6 @@ class SimpleRateLagMetricModel:
 
     # def set_topic_name(self, topic_name):
     #     self.__topic_name = topic_name
-    def get_consumer_group(self):
-        return self._consumer_group
-
-    def get_topic_name(self):
-        return self._topic_name
-
-    def get_topic_partition(self):
-        return self._topic_partition
-
-    # def get_topic_lag(self):
-    #     self.diff = int(self._topic_size) - int(self._topic_offset)
 
     def __str__(self):
         return 'kafka_topic_consumer_lag_for_rate{' \
@@ -121,7 +111,13 @@ class MetricsExporter:
         self.topic_data_metric = []
         self.topic_list = []
         self.consumer_offset_metric = []
-        self.bc = BrokerConnection(self.brokers_host, self.brokers_port, socket.AF_INET)
+        self.bc = BrokerConnection(self.brokers_host,
+                                   self.brokers_port,
+                                   socket.AF_INET,
+                                   security_protocol='SASL_PLAINTEXT',
+                                   sasl_mechanism='PLAIN',
+                                   sasl_plain_username='test',
+                                   sasl_plain_password='testovich')
         # self.bc.connect_blocking()
 
     def get_groups(self):
