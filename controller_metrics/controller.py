@@ -5,7 +5,11 @@ from model_metrics.kafka_metrics_exporter import MetricsExporter
 
 brokers_host = config.kafka['brokerhost']
 brokers_port = config.kafka['port']
-is_sasl = config.kafka['isSASL']
+is_sasl = config.kafka['is_sasl']
+security_protocol = config.kafka['security_protocol']
+sasl_mechanism = config.kafka['sasl_mechanism']
+c_sasl_username = config.kafka['sasl_plain_username']
+c_sasl_password = config.kafka['sasl_plain_password']
 
 
 def create_logger(level=logging.INFO):
@@ -38,7 +42,10 @@ def main_url():
 def return_metrics():
     metrics_response = []
     # if is_sasl is true - add sasl_user_name adn sasl_password
-    me = MetricsExporter(brokers_host, brokers_port, is_sasl)
+    if not is_sasl:
+        me = MetricsExporter(brokers_host, brokers_port)
+    else:
+        me = MetricsExporter(brokers_host, brokers_port, is_sasl, sasl_username=c_sasl_username, sasl_password=c_sasl_password)
     me.init_connection()
     consumer_group_list = me.get_groups()
     log.info('consumer_group_list: %s' % consumer_group_list)

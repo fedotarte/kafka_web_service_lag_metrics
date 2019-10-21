@@ -114,7 +114,6 @@ class MetricsExporter:
             self.bc = BrokerConnection(self.brokers_host,
                                        self.brokers_port,
                                        socket.AF_INET)
-
         else:
             self.bc = BrokerConnection(self.brokers_host,
                                        self.brokers_port,
@@ -138,7 +137,6 @@ class MetricsExporter:
             cons_groups.append(group[0])
             # print('group[0]', group[0])
         return cons_groups
-
     # invoke in each iteration of group list
 
     def get_topic_offsets(self, consumer_group):
@@ -163,8 +161,6 @@ class MetricsExporter:
             #
             # print('offsets for {0}'.format(topic[0]))
 
-            # TODO kafka_topic_size{topic=="TestTopic", partition="0"} 0.0
-
             for partition in topic[1]:
                 # print("topic[1]", topic[1])
                 # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
@@ -181,14 +177,13 @@ class MetricsExporter:
                                                                      str(partition[0]),
                                                                      str(topic_size[0]),
                                                                      str(partition[1]))
-
+                # add new item to metrics list
                 self.topic_offsets_for_groups.append(topic_consumer_lag_model.__str__())
+                # extending list of connsumer metrics by other list with rate metrisc to combine the response
                 self.topic_offsets_for_groups.extend(topic_consumer_rate_model.__str__())
         return self.topic_offsets_for_groups
 
     def get_topic_inbound_rate(self, consumer_group, topic_name):
-        topic_consumer_lag_rate_model = SimpleTopicConsumerLagMetricModel
-        self.topic_offsets_for_rate.append(consumer_group, topic_name)
         pass
 
     def get_topic_outbound_rate(self):
