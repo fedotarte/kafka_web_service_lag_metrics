@@ -5,6 +5,7 @@ from model_metrics.kafka_metrics_exporter import MetricsExporter
 
 brokers_host = config.kafka['brokerhost']
 brokers_port = config.kafka['port']
+is_sasl = config.kafka['isSASL']
 
 
 def create_logger(level=logging.INFO):
@@ -36,7 +37,8 @@ def main_url():
 @app.route('/metrics', methods=['GET'])
 def return_metrics():
     metrics_response = []
-    me = MetricsExporter(brokers_host, brokers_port)
+    # if is_sasl is true - add sasl_user_name adn sasl_password
+    me = MetricsExporter(brokers_host, brokers_port, is_sasl)
     me.init_connection()
     consumer_group_list = me.get_groups()
     log.info('consumer_group_list: %s' % consumer_group_list)

@@ -82,10 +82,6 @@ class SimpleRateLagMetricModel(SimpleTopicConsumerLagMetricModel):
         self._topic_size = topic_size
         self._topic_offset = topic_offset
         self.diff = int(self._topic_size) - int(self._topic_offset)
-        # self._topic_lag = topic_lag
-
-    # def set_topic_name(self, topic_name):
-    #     self.__topic_name = topic_name
 
     def __str__(self):
         return 'kafka_topic_consumer_lag_for_rate{' \
@@ -99,7 +95,10 @@ class SimpleRateLagMetricModel(SimpleTopicConsumerLagMetricModel):
 
 
 class MetricsExporter:
-    def __init__(self, host, port):
+    def __init__(self, host, port, is_sasl=False, sasl_username=None, sasl_password=None):
+        if sasl_username is not None and sasl_password is not None:
+            self.sasl_plain_username = sasl_username,
+            self.sasl_plain_password = sasl_password
         self.brokers_host = host
         self.brokers_port = port
         self.kafka_groups_response = None
@@ -111,13 +110,20 @@ class MetricsExporter:
         self.topic_data_metric = []
         self.topic_list = []
         self.consumer_offset_metric = []
-        self.bc = BrokerConnection(self.brokers_host,
-                                   self.brokers_port,
-                                   socket.AF_INET,
-                                   security_protocol='SASL_PLAINTEXT',
-                                   sasl_mechanism='PLAIN',
-                                   sasl_plain_username='test',
-                                   sasl_plain_password='testovich')
+        if not is_sasl:
+            self.bc = BrokerConnection(self.brokers_host,
+                                       self.brokers_port,
+                                       socket.AF_INET)
+
+        else:
+            self.bc = BrokerConnection(self.brokers_host,
+                                       self.brokers_port,
+                                       socket.AF_INET,
+                                       security_protocol='SASL_PLAINTEXT',
+                                       sasl_mechanism='PLAIN',
+                                       sasl_plain_username=self.sasl_plain_username,
+                                       sasl_plain_password=self.sasl_plain_password)
+
         # self.bc.connect_blocking()
 
     def get_groups(self):
@@ -162,11 +168,14 @@ class MetricsExporter:
             for partition in topic[1]:
                 # print("topic[1]", topic[1])
                 # print('- partition {0}, offset: {1} lag: {2}'.format(partition[0], int(partition[1]), lag_diff))
+
+                # data for lag and offset metrics
                 topic_consumer_lag_model = SimpleTopicConsumerLagMetricModel(str(consumer_group),
                                                                              str(topic[0]),
                                                                              str(partition[0]),
                                                                              str(topic_size[0]),
                                                                              str(partition[1]))
+                # data for rate and top 5 metrics
                 topic_consumer_rate_model = SimpleRateLagMetricModel(str(consumer_group),
                                                                      str(topic[0]),
                                                                      str(partition[0]),
