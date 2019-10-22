@@ -131,7 +131,7 @@ class MetricsExporter:
         self.kafka_groups_response = self.bc.send(list_groups_request)
         while not self.kafka_groups_response.is_done:
             for resp, f in self.bc.recv():
-                # print('group resp:', resp)
+                print('group resp:', resp)
                 f.success(resp)
         for group in self.kafka_groups_response.value.groups:
             cons_groups.append(group[0])
