@@ -142,7 +142,7 @@ class MetricsExporter:
     def get_topic_offsets(self, consumer_group):
         fetch_offset_request = OffsetFetchRequest_v3(consumer_group, None)
         self.kafka_topics_response = self.bc.send(fetch_offset_request)
-        print('kafka_topics_response', self.kafka_topics_response)
+        # print('kafka_topics_response', self.kafka_topics_response)
         while not self.kafka_topics_response.is_done:
             for resp, f in self.bc.recv():
                 # print('resp: ', resp)
