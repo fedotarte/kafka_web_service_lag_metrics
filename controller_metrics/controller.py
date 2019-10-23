@@ -45,6 +45,7 @@ def return_metrics():
     if not is_sasl:
         me = MetricsExporter(brokers_host, brokers_port)
     else:
+        print("Metric Exporter with sasl activated")
         me = MetricsExporter(brokers_host, brokers_port, is_sasl, sasl_username=c_sasl_username, sasl_password=c_sasl_password)
     me.init_connection()
     consumer_group_list = me.get_groups()

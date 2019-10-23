@@ -96,6 +96,8 @@ class SimpleRateLagMetricModel(SimpleTopicConsumerLagMetricModel):
 
 class MetricsExporter:
     def __init__(self, host, port, is_sasl=False, sasl_username=None, sasl_password=None):
+        self.sasl_plain_username = ""
+        self.sasl_plain_password = ""
         if sasl_username is not None and sasl_password is not None:
             self.sasl_plain_username = sasl_username,
             self.sasl_plain_password = sasl_password
@@ -110,18 +112,24 @@ class MetricsExporter:
         self.topic_data_metric = []
         self.topic_list = []
         self.consumer_offset_metric = []
+        self.bc = None
         if not is_sasl:
             self.bc = BrokerConnection(self.brokers_host,
                                        self.brokers_port,
                                        socket.AF_INET)
+            print(self.bc.__str__())
+            print("connection successful : %s" % str(self.bc.connected()))
+
         else:
             self.bc = BrokerConnection(self.brokers_host,
                                        self.brokers_port,
                                        socket.AF_INET,
                                        security_protocol='SASL_PLAINTEXT',
                                        sasl_mechanism='PLAIN',
-                                       sasl_plain_username=self.sasl_plain_username,
-                                       sasl_plain_password=self.sasl_plain_password)
+                                       sasl_plain_username='admin',
+                                       sasl_plain_password='12345')
+            print(self.bc.__str__())
+            print("connection with sasl successful : %s" % str(self.bc.connected()))
 
         # self.bc.connect_blocking()
 
@@ -137,6 +145,7 @@ class MetricsExporter:
             cons_groups.append(group[0])
             # print('group[0]', group[0])
         return cons_groups
+
     # invoke in each iteration of group list
 
     def get_topic_offsets(self, consumer_group):
@@ -193,4 +202,7 @@ class MetricsExporter:
         self.bc.close()
 
     def init_connection(self):
-        self.bc.connect_blocking()
+        if self.bc is not None:
+            self.bc.connect_blocking()
+            print(self.bc.__str__())
+            print("connection __SASL__ successful : %s" % str(self.bc.connected()))
