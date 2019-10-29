@@ -1,5 +1,4 @@
 kafka = dict(
-    # brokerhost='172.30.10.7',
     brokerhost='104.248.34.60',
     port=9092,
     is_sasl=False,
