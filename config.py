@@ -5,6 +5,6 @@ kafka = dict(
     is_sasl=False,
     security_protocol='SASL_PLAINTEXT',
     sasl_mechanism='PLAIN',
-    sasl_plain_username='admin',
-    sasl_plain_password='12345',
+    sasl_plain_username='',
+    sasl_plain_password='',
 )
